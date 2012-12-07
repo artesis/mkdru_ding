@@ -35,7 +35,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   if (link) html += '<a href="'+link+'" target="_blank" >';
   html += hit["md-title"];
   if (link) html += '</a>';
-  if(hit['location'][0]['md-medium']) { html+=" ("+hit['location'][0]['md-medium']+")"; }
+  if (hit['md-date']) { html += '<span class="date"> ('+hit['md-date']+')</span>'; }
   html += '</h3>';
   html += '<div class="search-snippet-info">' +
       '<p class="search-snippet"></p>' +
@@ -48,24 +48,25 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   if (hit["md-author"]) {
     // expand on ; and reprint in the same form
     var authors = hit["md-author"][0].split(';');
-    html += '<div class="creator"><span class="byline">' + Drupal.t('By') + ' </span>';
+    html += '<div class="creator"><span class="byline">' + Drupal.t('By:') + ' </span>';
     for(var i=0; i<authors.length-1; i++) {
       html+='<a class="author" href="'+basePath+'search/meta/'+specific_author_field+Drupal.theme.mkdruSafeTrim(authors[i])+'">'+authors[i]+'</a> ;';
     }
     html+='<a class="author" href="'+basePath+'search/meta/'+specific_author_field+Drupal.theme.mkdruSafeTrim(authors[authors.length-1])+'">'+authors[authors.length-1]+'</a>';
-    if (hit['md-date']) {
-      html += '<span class="date"> ('+hit['md-date']+')</span>';
-    }
     html += '</div><p></p>';
   }
-  var dhit=hit['location'][0];
-  if (dhit["md-journal-subpart"]) {
-    html += '<div class="mkdru-result-journal-subpart">'+dhit["md-journal-subpart"];
-    html += '</div><p/>';
-  } else if (hit["md-journal-title"]) {
-    html += '<div class="mkdru-result-journal">'+hit["md-journal-title"];
-    html += '</div><p/>';
+
+  var locations = hit.location;
+  html += '<div class="creator"><span class="byline">' + Drupal.t('Available from:') + ' </span>';
+  for (var i=0; i<locations.length; i++) {
+    html+='<a class="author" href="' + locations[i]['md-electronic-url'] + '">' + locations[i]['@name'] + '</a>';
+    if (locations[i]['md-journal-title'] && locations[i]['md-medium']=='track') {
+      html += ' (on "' + locations[i]['md-journal-title'] + '")';
+    }
+    html += '; ';
   }
+
+  var dhit=hit['location'][0];
   if (dhit["md-subject"] && dhit["md-subject"].length > 0) {
     html+='<div class="mkdru-result-subject"><p>';
     for(var i=0; i<dhit["md-subject"].length-1; i++) {

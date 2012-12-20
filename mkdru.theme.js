@@ -66,13 +66,12 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
     html += '; ';
   }
 
-  var dhit=hit['location'][0];
-  if (dhit["md-subject"] && dhit["md-subject"].length > 0) {
+  if (hit["md-subject"] && hit["md-subject"].length > 0) {
     html+='<div class="mkdru-result-subject"><p>';
-    for(var i=0; i<dhit["md-subject"].length-1; i++) {
-       html+='<a href="'+basePath+'search/meta/'+specific_subject_field+dhit["md-subject"][i]+'">'+dhit["md-subject"][i]+'</a> ; ';
+    for(var i=0; i<hit["md-subject"].length-1; i++) {
+       html+='<a href="'+basePath+'search/meta/'+specific_subject_field+hit["md-subject"][i]+'">'+hit["md-subject"][i]+'</a> ; ';
     }
-    html+='<a href="'+basePath+'search/meta/'+specific_subject_field+dhit["md-subject"][dhit["md-subject"].length-1]+'">'+dhit["md-subject"][dhit["md-subject"].length-1]+'</a></p></div>';
+    html+='<a href="'+basePath+'search/meta/'+specific_subject_field+hit["md-subject"][hit["md-subject"].length-1]+'">'+hit["md-subject"][hit["md-subject"].length-1]+'</a></p></div>';
   }
   html += "</div>";
   if (hit["md-description"]) {

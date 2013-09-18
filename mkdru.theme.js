@@ -33,7 +33,24 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += '<li class="search-result" id="rec_' + hit.recid + '" >';
 
   if(hit['md-medium']) {
-    html+='<div class="availability available">'+hit['md-medium']+'</div>';
+    var status = {
+      'available': true,
+      'reservable': false,
+      toCSSClass: function() {
+        return (this.available ? ' available' : '')
+          + (this.reservable ? ' reservable' : '');
+      }
+    };
+    jQuery.each(hit.location, function(i, e){
+      jQuery.each(e['md-locallocation'], function(ii){
+        if (e['md-publicnote'][ii] == 'CHECK SHELF') {
+          status.reservable = true;
+        }
+      });
+      html += '</table>';
+    });
+
+    html += '<div class="availability' + status.toCSSClass() + '">' + hit['md-medium'] + '</div>';
   }
 
   html += '<h3 class="title">';
@@ -82,11 +99,11 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += "</div>";
   if (hit["md-description"]) {
     // limit description to 600 characters
-    var d=hit["md-description"][0];
+    var d=hit["md-description"].join('<br>');
     var recid=hit.recid;
     html+='<span class="mkdru-result-description">';
     if (d.length < 620) {
-      html+='<div>'+d+'</div>';
+      html+='<div style="margin: 10px 0">'+d+'</div>';
     } else {
       html += '<div id="full_' +recid+'" style="display:none">'+
               d +'<a href="javascript:Drupal.theme.mkdruShowShortDescr(\''+recid+'\')"> <i>less</i></a></div>';

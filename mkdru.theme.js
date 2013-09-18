@@ -30,13 +30,18 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
 
   if (!link) link = choose_url(hit['location'][0]);
   var html = "";
-  html += '<li class="search-result" id="rec_' + hit.recid + '" >' +
-    '<h3 class="title">';
-  if (link) html += '<a href="'+link+'" target="_blank" >';
+  html += '<li class="search-result" id="rec_' + hit.recid + '" >';
+
+  if(hit['md-medium']) {
+    html+='<div class="availability available">'+hit['md-medium']+'</div>';
+  }
+
+  html += '<h3 class="title">';
+  if (link) html += '<a href="'+link+'">';
   html += hit["md-title"];
   if (link) html += '</a>';
-  if(hit['location'][0]['md-medium']) { html+=" ("+hit['location'][0]['md-medium']+")"; }
   html += '</h3>';
+
   html += '<div class="search-snippet-info">' +
       '<p class="search-snippet"></p>' +
       '<div class="ting-object clearfix">' +
@@ -45,6 +50,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
            '<div class="picture"></div>' +
          '</div>' +
          '<div class="right-column left">';
+
   if (hit["md-author"]) {
     // expand on ; and reprint in the same form
     var authors = hit["md-author"][0].split(';');
@@ -90,6 +96,21 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
     }
     html+='</span>';
   }
+
+  jQuery.each(hit.location, function(i, e){
+    html += '<table>';
+    jQuery.each(e['md-locallocation'], function(ii){
+      html += '<tr>';
+      var locallocation = e['md-locallocation'][ii].split(':');
+      html += '<td>' + locallocation.shift() + '</td>';
+      html += '<td>' + locallocation.join(':') + '</td>';
+      html += '<td>' + e['md-callnumber'][ii] + '</td>';
+      html += '<td>' + e['md-publicnote'][ii] + '</td>';
+      html += '</tr>';
+    });
+    html += '</table>';
+  });
+
   html += '</div>';
   html += '</div>';
   html += '</div>';

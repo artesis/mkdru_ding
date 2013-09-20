@@ -203,7 +203,7 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
 };
 
 Drupal.theme.mkdruDetails = function (data) {
-  var html = '<div class="details" title="'+data['md-title']+'">';
+  var html = '<div class="details" title="'+data['md-title']+'"><table width="100%">';
   var _values_stack = [];
   var render_field = function(field, value) {
     if (!value || value == 'PAZPAR2_NULL_VALUE' || value[0] == 'PAZPAR2_NULL_VALUE') {
@@ -229,7 +229,7 @@ Drupal.theme.mkdruDetails = function (data) {
     var _field = field.replace(/md-/, '').replace('-', ' ');
     var show_field = _field.charAt(0).toUpperCase() + _field.slice(1);
 
-    return '<b>' + show_field + ': </b> ' + value + '<br>';
+    return '<tr><td style="white-space:nowrap"><b>' + show_field + ': </b></td><td>' + value + '</td></tr>';
   }
 
   jQuery.each(data, function(i, e){
@@ -242,7 +242,7 @@ Drupal.theme.mkdruDetails = function (data) {
     }
   });
 
-  html += '</div>';
+  html += '</table></div>';
 
   return html;
 }
@@ -287,7 +287,7 @@ function bindMkdruDetailsHandler(recid) {
 
     var details = jQuery(Drupal.theme('mkdruDetails', data))
       .appendTo(selector)
-      .dialog();
+      .dialog({ width: 500 });
 
     details.find('.e-close').click(function () {
       closeDetailsBox(recid);

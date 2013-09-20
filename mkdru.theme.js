@@ -42,14 +42,19 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
           + (this.reservable ? ' reservable' : '');
       }
     };
-    jQuery.each(hit.location, function(i, e){
-      jQuery.each(e['md-locallocation'], function(ii){
-        if (e['md-publicnote'][ii] == 'CHECK SHELF') {
-          status.reservable = true;
+    if (hit.location != undefined) {
+      jQuery.each(hit.location, function(i, e){
+        if (e['md-locallocation'] == undefined) {
+          return;
         }
+        jQuery.each(e['md-locallocation'], function(ii){
+          if (e['md-publicnote'][ii] == 'CHECK SHELF') {
+            status.reservable = true;
+          }
+        });
+        html += '</table>';
       });
-      html += '</table>';
-    });
+    }
 
     html += '<div class="availability' + status.toCSSClass() + '">' + hit['md-medium'] + '</div>';
   }
@@ -116,17 +121,19 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   }
 
   jQuery.each(hit.location, function(i, e){
-    html += '<table>';
-    jQuery.each(e['md-locallocation'], function(ii){
-      html += '<tr>';
-      var locallocation = e['md-locallocation'][ii].split(':');
-      html += '<td>' + locallocation.shift() + '</td>';
-      html += '<td>' + locallocation.join(':') + '</td>';
-      html += '<td>' + e['md-callnumber'][ii] + '</td>';
-      html += '<td>' + e['md-publicnote'][ii] + '</td>';
-      html += '</tr>';
-    });
-    html += '</table>';
+    if (e['md-locallocation'] != undefined) {
+      html += '<table>';
+      jQuery.each(e['md-locallocation'], function(ii){
+        html += '<tr>';
+        var locallocation = e['md-locallocation'][ii].split(':');
+        html += '<td>' + locallocation.shift() + '</td>';
+        html += '<td>' + locallocation.join(':') + '</td>';
+        html += '<td>' + e['md-callnumber'][ii] + '</td>';
+        html += '<td>' + e['md-publicnote'][ii] + '</td>';
+        html += '</tr>';
+      });
+      html += '</table>';
+    }
   });
 
   html += '</div>';
@@ -197,7 +204,7 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
 Drupal.theme.mkdruDetails = function (data) {
   var html = '<div class="details">';
   var render_field = function(field, value) {
-    if (!value || value == 'PAZPAR2_NULL_VALUE') {
+    if (!value || value == 'PAZPAR2_NULL_VALUE' || value[0] == 'PAZPAR2_NULL_VALUE') {
       return '';
     }
 
@@ -253,8 +260,8 @@ function bindMkdruDetailsHandler(recid) {
   }
 
   var selector = jQuery('#' + (new MkdruRecid(recid)).toHtmlAttr());
-  var loader = jQuery('<img class="mkdru-details-loader" src="' + Drupal.settings.images_path + '/loader.png">');
-  jQuery('.e-mkdru-result-title', selector).append(loader);
+  var loader = jQuery('<img class="mkdru-details-loader" src="http://www.netgem.com/images/ajax-loader.gif">');
+  jQuery('.title', selector).append(loader);
 
   // Hide all other details boxes if any.
   jQuery.each(jQuery('.mkdru-result.details'), function(i, e) {
@@ -298,9 +305,7 @@ function bindMkdruDetailsHandler(recid) {
 
   // Call to pz webservice.
   mkdru.pz2.errorHandler = function (e) {
-    throw e;
-    // selector.after(Drupal.theme('mkdruEmusicDetail'))
-    //   .find('.mkdru-details-loader').remove();
+    jQuery(e).dialog();
   };
   mkdru.pz2.record(recid);
 };

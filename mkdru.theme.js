@@ -19,7 +19,8 @@ Drupal.theme.mkdruSafeTrim = function(s) {
 };
 
 Drupal.theme.mkdruResult = function(hit, num, detailLink) {
-  var link = choose_url(hit);
+  var link = true;//choose_url(hit);
+  var recid = new MkdruRecid(hit.recid[0]);
   var basePath=Drupal.settings.basePath;
   var specific_author_field="";
   var specific_subject_field="";
@@ -30,7 +31,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
 
   if (!link) link = choose_url(hit['location'][0]);
   var html = "";
-  html += '<li class="search-result" id="rec_' + hit.recid + '" >';
+  html += '<li class="mkdru search-result" id="' + recid.toHtmlAttr() + '" >';
 
   if(hit['md-medium']) {
     var status = {
@@ -54,9 +55,9 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   }
 
   html += '<h3 class="title">';
-  if (link) html += '<a href="'+link+'">';
+  if (link) html += '<span data-href="'+link+'" onclick="javascript:bindMkdruDetailsHandler(\''+hit.recid[0]+'\');">';
   html += hit["md-title"];
-  if (link) html += '</a>';
+  if (link) html += '</span>';
   html += '</h3>';
 
   html += '<div class="search-snippet-info">' +
@@ -192,3 +193,102 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
   if (show) jQuery('#mkdru-container-'+facet).show();
   return html;
 };
+
+Drupal.theme.mkdruDetails = function (data) {
+  var html;
+  jQuery.each(data, function(i, e){
+    html += '<b><i>' + i + ':</i></b><br>';
+    if (i == "location") {
+      jQuery.each(e[0], function(ii, ee){
+        html += '---- <b><i>' + ii + ':</i></b> ' + ee + '<br>';
+      });
+    } else {
+      html += '<b><i>' + i + ':</i></b> ' + e + '<br>';
+    }
+  });
+  return html;
+}
+
+// Mkdru record id wrapper.
+function MkdruRecid(recid) {
+  this.recid = recid;
+  this.toHtmlAttr = function () {
+    return this.recid.replace(/[\s\:]+/g, '_');
+  };
+}
+
+// Open details box.
+function bindMkdruDetailsHandler(recid) {
+  // Try to close details box if it open.
+  if (closeDetailsBox(recid)) {
+    return;
+  }
+
+  // Are details already loading?
+  if (jQuery('.mkdru-details-loader').length) {
+    return;
+  }
+
+  var selector = jQuery('#' + (new MkdruRecid(recid)).toHtmlAttr());
+  var loader = jQuery('<img class="mkdru-details-loader" src="' + Drupal.settings.images_path + '/loader.png">');
+  jQuery('.e-mkdru-result-title', selector).append(loader);
+
+  // Hide all other details boxes if any.
+  jQuery.each(jQuery('.mkdru-result.details'), function(i, e) {
+    closeDetailsBox(jQuery(this).prev().attr('id'));
+    jQuery(this).remove();
+  });
+
+  // Clear mkdru handler and set own.
+  jQuery(document).unbind('mkdru.onrecord');
+  jQuery(document).bind('mkdru.onrecord', function(event, data) {
+    var selector = jQuery('#' + (new MkdruRecid(data.recid[0])).toHtmlAttr());
+
+    clearTimeout(mkdru.pz2.showTimer);
+    jQuery('.mkdru-details-loader, .mkdru-result.details').remove();
+
+    var details = jQuery(Drupal.theme('mkdruDetails', data))
+      .appendTo(selector);
+
+    details.find('.e-close').click(function () {
+      closeDetailsBox(recid);
+    });
+
+    selector.addClass('open');
+
+    // Copy external links from album to each track.
+    jQuery('.external a', selector).clone().appendTo(jQuery('.b-data.external', details));
+
+    // Scroll to details.
+    var offset = details.offset();
+    if (offset) {
+      jQuery('html, body').animate({
+        scrollTop: offset.top-50,
+        scrollLeft: offset.left
+      });
+    }
+
+    mkdru.pz2.errorHandler = null;
+    clearTimeout(mkdru.pz2.recordTimer);
+  });
+
+  // Call to pz webservice.
+  mkdru.pz2.errorHandler = function (e) {
+    throw e;
+    // selector.after(Drupal.theme('mkdruEmusicDetail'))
+    //   .find('.mkdru-details-loader').remove();
+  };
+  mkdru.pz2.record(recid);
+};
+
+// Close details box.
+function closeDetailsBox(recid) {
+  var row = jQuery('#' + (new MkdruRecid(recid)).toHtmlAttr());
+  var details = row.next();
+  if (details.hasClass('mkdru-result details')) {
+    details.remove();
+    row.removeClass('open');
+    return true;
+  }
+  return false;
+}

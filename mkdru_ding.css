@@ -31,3 +31,6 @@ a.cross:hover {
   padding: 5px 0px 5px 0px;
 }
 
+.mkdru.search-result .title:hover {
+  cursor: pointer;
+}

@@ -100,7 +100,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += "</div>";
   if (hit["md-description"]) {
     // limit description to 600 characters
-    var d=hit["md-description"].join('<br>');
+    var d=hit["md-description"].join(' ');
     var recid=hit.recid;
     html+='<span class="mkdru-result-description">';
     if (d.length < 620) {
@@ -195,17 +195,40 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
 };
 
 Drupal.theme.mkdruDetails = function (data) {
-  var html;
+  var html = '<div class="details">';
+  var render_field = function(field, value) {
+    if (!value || value == 'PAZPAR2_NULL_VALUE') {
+      return '';
+    }
+
+    // skip fields without "md-" prefix
+    if (field.substring(0, 3) != 'md-' && i != 'location') {
+      return '';
+    }
+
+    // skip already shown fields
+    if (jQuery.inArray(field, ['md-author', 'md-title', 'md-date', 'md-medium', 'md-description','md-callnumber','md-publicnote','md-locallocation']) != -1) {
+      return '';
+    }
+
+    var _field = field.replace(/md-/, '').replace('-', ' ');
+    var show_field = _field.charAt(0).toUpperCase() + _field.slice(1);
+
+    return '<b>' + show_field + ': </b> ' + value + '<br>';
+  }
+
   jQuery.each(data, function(i, e){
-    html += '<b><i>' + i + ':</i></b><br>';
     if (i == "location") {
       jQuery.each(e[0], function(ii, ee){
-        html += '---- <b><i>' + ii + ':</i></b> ' + ee + '<br>';
+        html += render_field(ii, ee);
       });
     } else {
-      html += '<b><i>' + i + ':</i></b> ' + e + '<br>';
+      html += render_field(i, e);
     }
   });
+
+  html += '</div>';
+
   return html;
 }
 
@@ -248,7 +271,8 @@ function bindMkdruDetailsHandler(recid) {
     jQuery('.mkdru-details-loader, .mkdru-result.details').remove();
 
     var details = jQuery(Drupal.theme('mkdruDetails', data))
-      .appendTo(selector);
+      .appendTo(selector)
+      .dialog();
 
     details.find('.e-close').click(function () {
       closeDetailsBox(recid);
@@ -263,7 +287,7 @@ function bindMkdruDetailsHandler(recid) {
     var offset = details.offset();
     if (offset) {
       jQuery('html, body').animate({
-        scrollTop: offset.top-50,
+        scrollTop: offset.top-70,
         scrollLeft: offset.left
       });
     }

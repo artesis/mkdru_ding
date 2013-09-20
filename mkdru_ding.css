@@ -34,3 +34,7 @@ a.cross:hover {
 .mkdru.search-result .title:hover {
   cursor: pointer;
 }
+
+.mkdru.search-result .availability {
+  text-transform: uppercase;
+}

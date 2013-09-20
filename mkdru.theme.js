@@ -139,6 +139,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += '</div>';
   html += '</div>';
   html += '</div>';
+  html += '<button>Reserve</button>'
   html += '</li>';
   return html;
 };
@@ -202,7 +203,8 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
 };
 
 Drupal.theme.mkdruDetails = function (data) {
-  var html = '<div class="details">';
+  var html = '<div class="details" title="'+data['md-title']+'">';
+  var _values_stack = [];
   var render_field = function(field, value) {
     if (!value || value == 'PAZPAR2_NULL_VALUE' || value[0] == 'PAZPAR2_NULL_VALUE') {
       return '';
@@ -217,6 +219,12 @@ Drupal.theme.mkdruDetails = function (data) {
     if (jQuery.inArray(field, ['md-author', 'md-title', 'md-date', 'md-medium', 'md-description','md-callnumber','md-publicnote','md-locallocation']) != -1) {
       return '';
     }
+
+    // eliminate dublicates
+    if (jQuery.inArray(field, _values_stack) != -1) {
+      return '';
+    }
+    _values_stack.push(field);
 
     var _field = field.replace(/md-/, '').replace('-', ' ');
     var show_field = _field.charAt(0).toUpperCase() + _field.slice(1);

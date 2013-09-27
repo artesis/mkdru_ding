@@ -60,6 +60,8 @@ function mkdru_ding_search_execute($keys = NULL, $conditions = NULL) {
     'settings' => json_encode(variable_get('mkdru_ding', NULL)),
     'state' => array('query' => $keys)))));
 
+  // Enable ding_popup.
+  drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'ui.dialog');
   drupal_add_js(drupal_get_path('module', 'ding_popup') . '/ding_popup.js');
 

@@ -1,7 +1,11 @@
 <?php
+/**
+ * @file
+ * mkdru integration with ding.
+ */
 
 /**
- * Implements hook_search_info()
+ * Implements hook_search_info().
  */
 function mkdru_ding_search_info() {
   return array(
@@ -12,7 +16,7 @@ function mkdru_ding_search_info() {
 }
 
 /**
- * Implements hook_search_page()
+ * Implements hook_search_page().
  */
 function mkdru_ding_search_page($results) {
   $output['prefix']['#markup'] = theme('mkdru_results');
@@ -21,19 +25,19 @@ function mkdru_ding_search_page($results) {
 }
 
 /**
- * Implements hook_block_info()
+ * Implements hook_block_info().
  */
 function mkdru_ding_block_info() {
   $blocks['mkdru_ding_search_results'] = array(
     'info' => t('mkdru ding search results container.'),
-    'cache' => DRUPAL_NO_CACHE
+    'cache' => DRUPAL_NO_CACHE,
   );
 
   return $blocks;
 }
 
 /**
- * Implements hook_block_view()
+ * Implements hook_block_view().
  */
 function mkdru_ding_block_view($delta = '') {
   $block = array();
@@ -47,25 +51,31 @@ function mkdru_ding_block_view($delta = '') {
   return $block;
 }
 /**
- * Search callback function that is invoked by search_view()
+ * Search callback function that is invoked by search_view().
  */
-function mkdru_ding_search_conditions_callback($keys) {}
+function mkdru_ding_search_conditions_callback($keys) {
+  return array();
+}
 
 /**
- * Implements hook_search_execute()
+ * Implements hook_search_execute().
  */
 function mkdru_ding_search_execute($keys = NULL, $conditions = NULL) {
-  // Javascript from base mkdru
-  theme('mkdru_js', array('setting' => array('mkdru' => array(
-    'settings' => json_encode(variable_get('mkdru_ding', NULL)),
-    'state' => array('query' => $keys)))));
+  // Get default mkdru and render it.
+  $node = mkdru_ding_default_search_interface();
+  // @TODO Probably there is better way to get node view.
+  $view = mkdru_view($node, 'full');
+  render($view->content);
+
+  // Pass search query to mkdru.
+  drupal_add_js(array('mkdru' => array('state' => array('query' => $keys))), 'setting');
 
   // Enable ding_popup.
   drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'ui.dialog');
   drupal_add_js(drupal_get_path('module', 'ding_popup') . '/ding_popup.js');
 
-  // Ding integration
+  // Ding integration.
   $path = drupal_get_path('module', 'mkdru_ding');
   drupal_add_js($path . '/recipe.js', array(
     'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
@@ -73,26 +83,28 @@ function mkdru_ding_search_execute($keys = NULL, $conditions = NULL) {
     'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
   drupal_add_js($path . '/mkdru_ding.js', array(
     'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
+
   return array();
 }
 
 /**
- * Implements hook_ding_facetbrowser()
+ * Implements hook_ding_facetbrowser().
  */
 function mkdru_ding_ding_facetbrowser() {
   $results             = new stdClass();
   $results->facets     = array();
-  $results->show_empty = TRUE; # Show an empty facetbrowser block, even if search didn't return any results
+  // Show an empty facetbrowser block, even if search didn't return any results.
+  $results->show_empty = TRUE;
   return $results;
 }
 
 /**
-* Implements hook_menu()
-*/
+ * Implements hook_menu().
+ */
 function mkdru_ding_menu() {
   $items['admin/config/search/mkdru_ding'] = array(
     'title' => 'Pazpar2 Metasearch Ding Integration',
-    'description' => 'Search settings for mkdru instance integrated into Ding.',
+    'description' => 'Settings for mkdru instance integrated into Ding.',
     'page callback' => 'drupal_get_form',
     'page arguments' => array('mkdru_ding_settings'),
     'access arguments' => array('administer site configuration'),
@@ -102,57 +114,91 @@ function mkdru_ding_menu() {
 }
 
 /**
-* Implements hook_init()
-*/
+ * Implements hook_init().
+ */
 function mkdru_ding_init() {
   // Applies our module specific CSS to all pages. This works best because
   // all CSS is aggregated and cached so we reduce the number of HTTP
   // requests and the size is negligible.
-  drupal_add_css(drupal_get_path('module', 'mkdru_ding') .'/mkdru_ding.css');
+  drupal_add_css(drupal_get_path('module', 'mkdru_ding') . '/mkdru_ding.css');
 }
 
 
 /**
- * Settings form
+ * Settings form.
  */
 function mkdru_ding_settings($form, &$form_state) {
-  $form_state['build_info']['args']['settings'] = variable_get('mkdru_ding', NULL);
-  $form = drupal_retrieve_form('mkdru_settings_form', $form_state);
-  $form['settings']['#title'] = t('Search settings for DING integration');
-  $settings=$form_state['build_info']['args']['settings'];
-  $form['settings']['specific_author_field'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Search-attribute for author-links'),
-    '#description' => t('Use this specific attribute for author-links instead of any'),
-    '#required' => FALSE,
-    '#default_value' => $settings['specific_author_field'],
-  );
-  $form['settings']['specific_subject_field'] = array(
-    '#type' => 'textfield',
-    '#title' => t('Search-attribute for subject-links'),
-    '#description' => t('Use this specific attribute for subject-links instead of any'),
-    '#required' => FALSE,
-    '#default_value' => $settings['specific_subject_field'],
+  $nodes = _mkdru_ding_search_interfaces();
+
+  $options = array(t('Select'));
+  foreach ($nodes as $node) {
+    $options[$node->vid] = $node->title;
+  }
+
+  $form['mkdru_ding_search_interface'] = array(
+    '#type' => 'select',
+    '#title' => t('Available mkdru search interfaces'),
+    '#options' => $options,
+    '#default_value' => variable_get('mkdru_ding_search_interface', NULL),
+    '#description' => t('Please choose witch interface to use. Each interface is created as node.'),
   );
 
-  $form['submit'] = array(
-    '#type' => 'submit',
-    '#value' => 'Save configuration',
-  );
-  return $form;
+  return system_settings_form($form);
 }
 
 /**
- * Settings form handler
+ * Retrieve available mkdru search interfaces.
+ *
+ * @param integer $limit
+ *   Amount of results.
+ *
+ * @return array
+ *   List of mkdru nodes.
  */
-function mkdru_ding_settings_submit($form, &$form_state) {
-  variable_set('mkdru_ding', $form_state['values']['settings']);
-  drupal_set_message(t('The configuration options have been saved.'));
+function _mkdru_ding_search_interfaces($limit = NULL) {
+  $query = new EntityFieldQuery();
+  $query = $query->entityCondition('entity_type', 'node')
+    ->propertyCondition('type', 'mkdru');
+
+  if (is_int($limit)) {
+    $query->range(0, $limit);
+  }
+
+  $result = $query->execute();
+  $nodes = node_load_multiple(array_keys($result['node']));
+
+  return $nodes;
 }
 
 /**
-* Implements hook_theme().
-*/
+ * Get mkdru search interface defined in settings or simply first available.
+ *
+ * @throws RuntimeException
+ *   If unable to detect any mkdru nodes.
+ *
+ * @return stdClass
+ *   Mkdru node.
+ */
+function mkdru_ding_default_search_interface() {
+  $node = NULL;
+  $node_id = variable_get('mkdru_ding_search_interface', NULL);
+  if ($node_id !== NULL) {
+    $node = node_load($node_id);
+  }
+  else {
+    $node = current(_mkdru_ding_search_interfaces(1));
+  }
+
+  if (!($node instanceof stdClass)) {
+    throw new RuntimeException(t("Can't detect any mkdru search interface"));
+  }
+
+  return $node;
+}
+
+/**
+ * Implements hook_theme().
+ */
 function mkdru_ding_theme() {
   return array(
     'mkdru_results' => array(

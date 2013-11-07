@@ -129,7 +129,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
         html += '<td>' + locallocation.shift() + '</td>';
         html += '<td>' + locallocation.join(':') + '</td>';
         html += '<td>' + e['md-callnumber'][ii] + '</td>';
-        html += '<td>' + e['md-publicnote'][ii] + '</td>';
+        html += '<td>' + (e['md-publicnote'][ii] == undefined ? '' : e['md-publicnote'][ii]) + '</td>';
         html += '</tr>';
       });
       html += '</table>';

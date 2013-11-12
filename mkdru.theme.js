@@ -48,7 +48,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
           return;
         }
         jQuery.each(e['md-locallocation'], function(ii){
-          if (e['md-publicnote'][ii] == 'CHECK SHELF') {
+          if (typeof(e['md-publicnote']) != 'undefined' && e['md-publicnote'][ii] == 'CHECK SHELF') {
             status.reservable = true;
           }
         });
@@ -126,10 +126,14 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
       jQuery.each(e['md-locallocation'], function(ii){
         html += '<tr>';
         var locallocation = e['md-locallocation'][ii].split(':');
+        var note = '';
+        if (typeof(e['md-publicnote']) != 'undefined' && typeof(e['md-publicnote'][ii]) != 'undefined') {
+          note = e['md-publicnote'][ii];
+        }
         html += '<td>' + locallocation.shift() + '</td>';
         html += '<td>' + locallocation.join(':') + '</td>';
         html += '<td>' + e['md-callnumber'][ii] + '</td>';
-        html += '<td>' + (e['md-publicnote'][ii] == undefined ? '' : e['md-publicnote'][ii]) + '</td>';
+        html += '<td>' + note + '</td>';
         html += '</tr>';
       });
       html += '</table>';
@@ -139,7 +143,8 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += '</div>';
   html += '</div>';
   html += '</div>';
-  html += '<button>Reserve</button>'
+  var id = hit.location[0]['md-id'];
+  html += '<button class="mkopac-reserve-button" data-id="'+id+'">Reserve</button>'
   html += '</li>';
   return html;
 };

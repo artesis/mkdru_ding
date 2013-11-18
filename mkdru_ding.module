@@ -9,7 +9,7 @@
  */
 function mkdru_ding_search_info() {
   return array(
-    'title'               => t('E-articles'),
+    'title'               => t('Items'),
     'path'                => 'meta',
     'conditions_callback' => 'mkdru_ding_search_conditions_callback',
   );

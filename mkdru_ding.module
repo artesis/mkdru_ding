@@ -52,15 +52,32 @@ function mkdru_ding_block_view($delta = '') {
 function mkdru_ding_search_conditions_callback($keys) {}
 
 /**
- * Implements hook_search_execute()
+ * Implements hook_search_execute().
  */
 function mkdru_ding_search_execute($keys = NULL, $conditions = NULL) {
-  // Javascript from base mkdru
-  theme('mkdru_js', array('setting' => array('mkdru' => array(
-    'settings' => json_encode(variable_get('mkdru_ding', NULL)),
-    'state' => array('query' => $keys)))));
+  // Javascript from base mkdru.
+  $settings = variable_get('mkdru_ding', NULL);
 
-  // Ding integration
+  // Translate facet names.
+  if (!empty($settings['facets'])) {
+    foreach ($settings['facets'] as &$facet) {
+      $facet['displayName'] = t($facet['displayName']);
+    }
+  }
+
+  theme(
+    'mkdru_js',
+    array(
+      'setting' => array(
+        'mkdru' => array(
+          'settings' => json_encode($settings),
+          'state' => array('query' => $keys),
+        ),
+      ),
+    )
+  );
+
+  // Ding integration.
   $path = drupal_get_path('module', 'mkdru_ding');
   drupal_add_js($path . '/recipe.js', array(
     'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));

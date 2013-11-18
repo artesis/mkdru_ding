@@ -181,12 +181,15 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
   for (var i = 0; i < terms.length && i < max; i++ ) {
     show = true;
     var term = terms[i];
-    var id = term.name.split(/w+/).join("-").toLowerCase();
+    var id = facet + "-" + term.name.split(/w+/).join("-").toLowerCase();
     html += '<div class="form-item form-type-checkbox">';
     html += '<input type="checkbox" id="'+id+'" onclick="window.location=\'' +term.toggleLink+'\'; return true;" class="form-checkbox"';
     if (term.selected) html += ' checked="checked"';
     html += '/><label class="option" for="'+id+'">' + term.name.replace('/', ' / ');
-    html += '<span>&nbsp;('+term.freq+')</span></label></div>';
+    if (term.freq) {
+      html += '<span>&nbsp;('+term.freq+')</span>';
+    }
+    html += '</label></div>';
   }
   if (terms.length === 0 && selections && selections.length) {
     for (var i=0; i<selections.length; i++) {

@@ -104,7 +104,15 @@ Drupal.theme.mkdruFacetContainer = function (facetsCfg) {
     fs.push(facetsCfg[fname]);
   }
   fs.sort(function (a,b) { return a.orderWeight - b.orderWeight; });
-  var html = '<h2>Facet browser</h2><div class="content">';
+
+  // Keep facet browser title.
+  var title = 'Facet browser';
+  var originalTitle = jQuery(Drupal.settings.dingFacetBrowser.mainElement);
+  if (originalTitle.length > 0) {
+    title = originalTitle.find('h2').text();
+  }
+
+  var html = '<h2>' + title + '</h2><div class="content">';
   for (var i=0; i<fs.length; i++) {
     var f = fs[i];
     //not display

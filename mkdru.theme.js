@@ -182,7 +182,7 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
     show = true;
     var term = terms[i];
     var id = facet + "-" + term.name.split(/w+/).join("-").toLowerCase();
-    html += '<div class="form-item form-type-checkbox">';
+    html += '<div class="form-item form-type-checkbox ' + (term.selected ? ' active-field' : '') + '">';
     html += '<input type="checkbox" id="'+id+'" onclick="window.location=\'' +term.toggleLink+'\'; return true;" class="form-checkbox"';
     if (term.selected) html += ' checked="checked"';
     html += '/><label class="option" for="'+id+'">' + term.name.replace('/', ' / ');

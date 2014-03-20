@@ -166,7 +166,7 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
 Drupal.theme.mkdruCounts = function(first, last, available, total) {
   var result = Drupal.theme.prototype.mkdruCounts(first, last, available, total);
   // Hide all counters except first when we have no results.
-  if (result == Drupal.t('No results')) {
+  if (last == 0) {
     jQuery('.mkdru-counts:not(:first)').hide();
   }
   // Show all counters.

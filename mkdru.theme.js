@@ -156,14 +156,14 @@ Drupal.theme.mkdruFacetContainer = function (facetsCfg) {
     fs.push(facetsCfg[fname]);
   }
   fs.sort(function (a,b) { return a.orderWeight - b.orderWeight; });
-  var html = '<h2>' + Drupal.t('Facet browser') + '</h2><div class="content">';
+  var html = '<h2>Facet browser</h2><div class="content">';
   for (var i=0; i<fs.length; i++) {
     var f = fs[i];
     //not display
     html += '<div id="mkdru-container-'+f.originalKey +
       '" style="display: none;">';
     html += '<fieldset class="form-wrapper">';
-    html += '<legend><span class="fieldset-legend">'+f.displayName +'</span></legend>';
+    html += '<legend><span class="fieldset-legend">'+f.displayName +'<i class="icon-right-open"></i></span></legend>';
     html += '<div class="fieldset-wrapper">';
     html += '<div class="mkdru-facet-'+f.originalKey+' form-checkboxes"/>';
     html += '</div>';
@@ -185,7 +185,7 @@ Drupal.theme.mkdruFacet = function (terms, facet, max, selections) {
     html += '<div class="form-item form-type-checkbox ' + (term.selected ? ' active-field' : '') + '">';
     html += '<input type="checkbox" id="'+id+'" onclick="window.location=\'' +term.toggleLink+'\'; return true;" class="form-checkbox"';
     if (term.selected) html += ' checked="checked"';
-    html += '/><label class="option" for="'+id+'">' + term.name.replace('/', ' / ');
+    html += '/><label class="option" for="'+id+'"><i class="' + (term.selected ? ' icon-check' : 'icon-check-empty') + '"></i>' + term.name.replace('/', ' / ');
     if (term.freq) {
       html += '<span>&nbsp;('+term.freq+')</span>';
     }

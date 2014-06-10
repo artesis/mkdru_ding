@@ -121,13 +121,13 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   }
 
   jQuery.each(hit.location, function(i, e){
-    if (e['md-locallocation'] != undefined) {
+    if (e['md-locallocation'] !== undefined) {
       html += '<table>';
       jQuery.each(e['md-locallocation'], function(ii){
         html += '<tr>';
         var locallocation = e['md-locallocation'][ii].split(':');
         var note = '';
-        if (typeof(e['md-publicnote']) != 'undefined' && typeof(e['md-publicnote'][ii]) != 'undefined') {
+        if (typeof(e['md-publicnote']) !== 'undefined' && typeof(e['md-publicnote'][ii]) !== 'undefined') {
           note = e['md-publicnote'][ii];
         }
         html += '<td>' + locallocation.shift() + '</td>';
@@ -144,7 +144,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   html += '</div>';
   html += '</div>';
   var id = hit.location[0]['md-id'];
-  html += '<button class="mkopac-reserve-button" data-id="'+id+'">Reserve</button>'
+  html += '<button class="mkopac-reserve-button" data-id="' + id + '">' + Drupal.t('Reserve') + '</button>';
   html += '</li>';
   return html;
 };

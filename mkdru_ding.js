@@ -38,6 +38,7 @@
   }
 
   $(document).ready(function() {
+    // Set dropdown selected options, if url component has sort vaue.
     var sort_preg = new RegExp(/sort=(\w+:[0-1])/);
     var sort = window.location.hash.match(sort_preg);
     if (sort && sort[1]) {
@@ -45,12 +46,16 @@
     }
   });
 
+  /**
+   * Respond to sort value change.
+   */
   $('.mkdru-sorting option').live('click', function() {
     var sort = $(this).attr('value');
     var location = window.location;
     var new_sort = 'sort=' + sort;
     var sort_preg = new RegExp(/sort=\w+:[0-1]/);
 
+    // Make the needed changes in browser url.
     if (location.hash.match(sort_preg)) {
       var hash = location.hash.replace(sort_preg, new_sort);
       location.hash = hash;
@@ -59,6 +64,7 @@
       location.hash = new_sort + '&' + location.hash.replace('#', '');
     }
 
+    // Let Mkdru know of new search params and trigger search.
     mkdru.defaultState.sort = sort;
     mkdru.state.sort = sort;
     mkdru.search();

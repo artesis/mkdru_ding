@@ -34,3 +34,16 @@ a.cross:hover {
 .mkdru.search-result .availability {
   text-transform: uppercase;
 }
+
+.pane-mkdru-ding-mkdru-ding-search-results .wrap .mkdru-counts {
+  float: left;
+}
+
+.pane-mkdru-ding-mkdru-ding-search-results .wrap .mkdru-sorting {
+  float: right;
+}
+
+.pane-mkdru-ding-mkdru-ding-search-results .wrap .clearfix {
+  clear: both;
+  float: none;
+}

@@ -1,23 +1,25 @@
 // Wrapper for jQuery
-(function ($) {
+(function($) {
   var mkdru_ding = {};
 
-  Drupal.theme.prototype.mkdruFacetContainer = function (facetsCfg) {
+  Drupal.theme.prototype.mkdruFacetContainer = function(facetsCfg) {
     var fs = [];
     for (var fname in facetsCfg) {
       facetsCfg[fname].originalKey = fname;
       fs.push(facetsCfg[fname]);
     }
-    fs.sort(function (a,b) { return a.orderWeight - b.orderWeight; });
+    fs.sort(function(a, b) {
+      return a.orderWeight - b.orderWeight;
+    });
     var html = '<h2>Facet browser</h2><div class="content">';
-    for (var i=0; i<fs.length; i++) {
+    for (var i = 0; i < fs.length; i++) {
       var f = fs[i];
       //not display
-      html += '<div id="mkdru-container-'+f.originalKey +'" style="display: none;">';
+      html += '<div id="mkdru-container-' + f.originalKey + '" style="display: none;">';
       html += '<fieldset class="form-wrapper">';
-      html += '<legend><span class="fieldset-legend">'+f.displayName +'</span></legend>';
+      html += '<legend><span class="fieldset-legend">' + f.displayName + '</span></legend>';
       html += '<div class="fieldset-wrapper">';
-      html += '<div class="mkdru-facet-'+f.originalKey+' form-checkboxes"/>';
+      html += '<div class="mkdru-facet-' + f.originalKey + ' form-checkboxes"/>';
       html += '</div>';
       html += '</fieldset>';
       html += '</div>';
@@ -26,7 +28,7 @@
     return html;
   };
 
-  mkdru_ding.populateFacetContainer = function () {
+  mkdru_ding.populateFacetContainer = function() {
     $(Drupal.settings.dingFacetBrowser.mainElement).html(Drupal.theme('mkdruFacetContainer', mkdru.facets));
   };
 

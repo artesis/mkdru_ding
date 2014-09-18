@@ -44,12 +44,41 @@ function mkdru_ding_block_view($delta = '') {
 
   switch ($delta) {
     case 'mkdru_ding_search_results':
+      $sort_element = mkdru_ding_sort_element();
+      $sort_element_markup = drupal_render($sort_element);
       $block['subject'] = t('mkdru ding search results');
-      $block['content'] = '<div class="mkdru-pager"></div><div class="mkdru-counts"></div><p></p><div class="mkdru-result-list mkdru-results"></div><div class="mkdru-pager"></div><div class="mkdru-counts"></div>';
+      $block['content'] = ''
+        . '<div class="mkdru-pager"></div>'
+        . '<div class="wrap"><div class="mkdru-counts"></div>' . $sort_element_markup . '</div><div class="clearfix"></div>'
+        . '<p></p>'
+        . '<div class="mkdru-result-list mkdru-results"></div>'
+        . '<div class="mkdru-pager"></div>'
+        . '<div class="mkdru-counts"></div>';
       break;
   }
   return $block;
 }
+
+function mkdru_ding_sort_element() {
+  $form = array();
+
+  $form['sort_dropdown'] = array(
+    '#type' => 'select',
+    '#options' => array(
+      'relevance:0' => t('Ranking (desc)'),
+      'relevance:1' => t('Ranking (asc)'),
+      'title:0' => t('Title (desc)'),
+      'title:1' => t('Title (asc)'),
+      'date:0' => t('Year (desc)'),
+      'date:1' => t('Year (asc)'),
+    ),
+    '#prefix' => '<div class="mkdru-sorting">',
+    '#suffix' => '</div>',
+  );
+
+  return $form;
+}
+
 /**
  * Search callback function that is invoked by search_view().
  */

@@ -41,25 +41,27 @@
 
   $(document).ready(function() {
     // Set dropdown selected options, if url component has sort vaue.
-    var sort_preg = new RegExp(/sort=(\w+:[0-1])/);
+    var sort_preg = new RegExp(/sort=(.+[0-1])&/);
     var sort = window.location.hash.match(sort_preg);
+
     if (sort && sort[1]) {
-      $('.mkdru-sorting option[value="' + sort[1] + '"]').attr('selected', 'selected');
+      var ele = decodeURIComponent(sort[1]);
+      $('.mkdru-sorting select option[value="' + ele + '"]').attr('selected', 'selected');
     }
   });
 
   /**
    * Respond to sort value change.
    */
-  $('.mkdru-sorting option').live('click', function() {
+  $('.mkdru-sorting select').live('change', function() {
     var sort = $(this).attr('value');
     var location = window.location;
     var new_sort = 'sort=' + sort;
-    var sort_preg = new RegExp(/sort=\w+:[0-1]/);
+    var sort_preg = new RegExp(/sort=(.+[0-1])&/);
 
     // Make the needed changes in browser url.
     if (location.hash.match(sort_preg)) {
-      var hash = location.hash.replace(sort_preg, new_sort);
+      var hash = location.hash.replace(sort_preg, new_sort + '&');
       location.hash = hash;
     }
     else {
@@ -72,6 +74,8 @@
     mkdru.search();
 
     window.location = location.hash;
+
+    return false;
   });
 
 })(jQuery);

@@ -47,7 +47,7 @@
       'url' : href,
       'type' : 'get',
       'complete' : function(xhr) {
-        if (xhr.status == 200 && xhr.responseText.substr(0, 6) != "<html>") {
+        if (xhr.status == 200 && xhr.responseText.substr(0, 6) != '<html>') {
           window.location.replace(href);
         }
         else {

@@ -36,8 +36,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   if (!link)
     link = choose_url(hit['location'][0]);
   var html = "";
-  html += '<li class="search-result" id="rec_' + hit.recid + '" >'
-      + '<h3 class="title">';
+  html += '<li class="search-result" id="rec_' + hit.recid + '" >' + '<h3 class="title">';
   if (link)
     html += '<a href="' + link + '" target="_blank" >';
   html += hit["md-title"];
@@ -47,25 +46,15 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
     html += " (" + hit['location'][0]['md-medium'] + ")";
   }
   html += '</h3>';
-  html += '<div class="search-snippet-info">'
-      + '<p class="search-snippet"></p>' + '<div class="ting-object clearfix">'
-      + '<div class="ting-overview clearfix">'
-      + '<div class="left-column left">' + '<div class="picture"></div>'
-      + '</div>' + '<div class="right-column left">';
+  html += '<div class="search-snippet-info">' + '<p class="search-snippet"></p>' + '<div class="ting-object clearfix">' + '<div class="ting-overview clearfix">' + '<div class="left-column left">' + '<div class="picture"></div>' + '</div>' + '<div class="right-column left">';
   if (hit["md-author"]) {
     // expand on ; and reprint in the same form
     var authors = hit["md-author"][0].split(';');
-    html += '<div class="creator"><span class="byline">' + Drupal.t('By')
-        + ' </span>';
+    html += '<div class="creator"><span class="byline">' + Drupal.t('By') + ' </span>';
     for (var i = 0; i < authors.length - 1; i++) {
-      html += '<a class="author" href="' + basePath + 'search/meta/'
-          + specific_author_field + Drupal.theme.mkdruSafeTrim(authors[i])
-          + '">' + authors[i] + '</a> ;';
+      html += '<a class="author" href="' + basePath + 'search/meta/' + specific_author_field + Drupal.theme.mkdruSafeTrim(authors[i]) + '">' + authors[i] + '</a> ;';
     }
-    html += '<a class="author" href="' + basePath + 'search/meta/'
-        + specific_author_field
-        + Drupal.theme.mkdruSafeTrim(authors[authors.length - 1]) + '">'
-        + authors[authors.length - 1] + '</a>';
+    html += '<a class="author" href="' + basePath + 'search/meta/' + specific_author_field + Drupal.theme.mkdruSafeTrim(authors[authors.length - 1]) + '">' + authors[authors.length - 1] + '</a>';
     if (hit['md-date']) {
       html += '<span class="date"> (' + hit['md-date'] + ')</span>';
     }
@@ -73,8 +62,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   }
   var dhit = hit['location'][0];
   if (dhit["md-journal-subpart"]) {
-    html += '<div class="mkdru-result-journal-subpart">'
-        + dhit["md-journal-subpart"];
+    html += '<div class="mkdru-result-journal-subpart">' + dhit["md-journal-subpart"];
     html += '</div><p/>';
   }
   else if (hit["md-journal-title"]) {
@@ -84,12 +72,9 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
   if (dhit["md-subject"] && dhit["md-subject"].length > 0) {
     html += '<div class="mkdru-result-subject"><p>';
     for (var i = 0; i < dhit["md-subject"].length - 1; i++) {
-      html += '<a href="' + basePath + 'search/meta/' + specific_subject_field
-          + dhit["md-subject"][i] + '">' + dhit["md-subject"][i] + '</a> ; ';
+      html += '<a href="' + basePath + 'search/meta/' + specific_subject_field + dhit["md-subject"][i] + '">' + dhit["md-subject"][i] + '</a> ; ';
     }
-    html += '<a href="' + basePath + 'search/meta/' + specific_subject_field
-        + dhit["md-subject"][dhit["md-subject"].length - 1] + '">'
-        + dhit["md-subject"][dhit["md-subject"].length - 1] + '</a></p></div>';
+    html += '<a href="' + basePath + 'search/meta/' + specific_subject_field + dhit["md-subject"][dhit["md-subject"].length - 1] + '">' + dhit["md-subject"][dhit["md-subject"].length - 1] + '</a></p></div>';
   }
   html += "</div>";
   if (hit["md-description"]) {
@@ -101,13 +86,8 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
       html += '<div>' + d + '</div>';
     }
     else {
-      html += '<div id="full_' + recid + '" style="display:none">' + d
-          + '<a href="javascript:Drupal.theme.mkdruShowShortDescr(\'' + recid
-          + '\')"> <i>less</i></a></div>';
-      html += '<div id="short_' + recid + '" style="display:block">'
-          + Drupal.theme.mkdruTruncateDescr(d, 600)
-          + '<a href="javascript:Drupal.theme.mkdruShowFullDescr(\'' + recid
-          + '\')"> <i>more</i></a></div>';
+      html += '<div id="full_' + recid + '" style="display:none">' + d + '<a href="javascript:Drupal.theme.mkdruShowShortDescr(\'' + recid + '\')"> <i>less</i></a></div>';
+      html += '<div id="short_' + recid + '" style="display:block">' + Drupal.theme.mkdruTruncateDescr(d, 600) + '<a href="javascript:Drupal.theme.mkdruShowFullDescr(\'' + recid + '\')"> <i>more</i></a></div>';
     }
     html += '</span>';
   }
@@ -140,11 +120,9 @@ Drupal.theme.mkdruFacetContainer = function(facetsCfg) {
   for (var i = 0; i < fs.length; i++) {
     var f = fs[i];
     // not display
-    html += '<div id="mkdru-container-' + f.originalKey
-        + '" style="display: none;">';
+    html += '<div id="mkdru-container-' + f.originalKey + '" style="display: none;">';
     html += '<fieldset class="form-wrapper">';
-    html += '<legend><span class="fieldset-legend">' + f.displayName
-        + '</span></legend>';
+    html += '<legend><span class="fieldset-legend">' + f.displayName + '</span></legend>';
     html += '<div class="fieldset-wrapper">';
     html += '<div class="mkdru-facet-' + f.originalKey + ' form-checkboxes"/>';
     html += '</div>';
@@ -164,13 +142,10 @@ Drupal.theme.mkdruFacet = function(terms, facet, max, selections) {
     var term = terms[i];
     var id = term.name.split(/w+/).join("-").toLowerCase();
     html += '<div class="form-item form-type-checkbox">';
-    html += '<input type="checkbox" id="' + id
-        + '" onclick="window.location=\'' + term.toggleLink
-        + '\'; return true;" class="form-checkbox"';
+    html += '<input type="checkbox" id="' + id + '" onclick="window.location=\'' + term.toggleLink + '\'; return true;" class="form-checkbox"';
     if (term.selected)
       html += ' checked="checked"';
-    html += '/><label class="option" for="' + id + '">'
-        + term.name.replace('/', ' / ');
+    html += '/><label class="option" for="' + id + '">' + term.name.replace('/', ' / ');
     html += '<span>&nbsp;(' + term.freq + ')</span></label></div>';
   }
   if (terms.length === 0 && selections && selections.length) {
@@ -179,16 +154,9 @@ Drupal.theme.mkdruFacet = function(terms, facet, max, selections) {
       if (selections[i]) {
         // since we have no target name (only id) go for the basename
         // FIXME get the proper target name
-        var name = facet == "source" ? selections[i].replace(/.*[\/\\]/, "")
-            .replace(/\?.*/, '') : selections[i];
+        var name = facet == "source" ? selections[i].replace(/.*[\/\\]/, "").replace(/\?.*/, '') : selections[i];
         html += '<div class="form-item form-type-checkbox">';
-        html += '<input type="checkbox" checked="checked" id="'
-            + name
-            + '" '
-            + 'onclick="window.location=\''
-            + mkdru.removeLimit(facet, selections[i])
-            + '\';return true;" class="form-checkbox"/><label class="option" for="'
-            + name + '">' + name.replace('/', ' / ') + '</a></label></div>';
+        html += '<input type="checkbox" checked="checked" id="' + name + '" ' + 'onclick="window.location=\'' + mkdru.removeLimit(facet, selections[i]) + '\';return true;" class="form-checkbox"/><label class="option" for="' + name + '">' + name.replace('/', ' / ') + '</a></label></div>';
       }
     }
   }
@@ -198,8 +166,7 @@ Drupal.theme.mkdruFacet = function(terms, facet, max, selections) {
 };
 
 Drupal.theme.mkdruCounts = function(first, last, available, total) {
-  var result = Drupal.theme.prototype
-      .mkdruCounts(first, last, available, total);
+  var result = Drupal.theme.prototype.mkdruCounts(first, last, available, total);
   // Hide all counters except first when we have no results.
   if (last == 0) {
     jQuery('.mkdru-counts:not(:first)').hide();

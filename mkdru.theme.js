@@ -59,8 +59,8 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
     html += '</div><p></p>';
   }
   var dhit=hit['location'][0];
-  if (dhit["md-journal-subpart"]) {
-    html += '<div class="mkdru-result-journal-subpart">'+dhit["md-journal-subpart"];
+  if (dhit["md-citation"]) {
+    html += '<div class="mkdru-result-citation">'+dhit["md-citation"];
     html += '</div><p/>';
   } else if (hit["md-journal-title"]) {
     html += '<div class="mkdru-result-journal">'+hit["md-journal-title"];

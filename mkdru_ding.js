@@ -37,4 +37,23 @@ if (mkdru.pz2) {
   mkdru.callbacks.push(mkdru_ding.populateFacetContainer);
 }
 
+// Handle RIS export click.
+$('.export-to-ris').live('click', function() {
+  var href = $(this).find('a').attr('href');
+
+  $.ajax({
+    'url' : href,
+    'type' : 'get',
+    'complete' : function(xhr) {
+      if (xhr.status == 200 && xhr.responseText.substr(0, 6) != "<html>") {
+        window.location.replace(href);
+      }
+      else {
+        alert(Drupal.t('The requested ris file is not available anymore. Please, refresh the page.'));
+      }
+    }
+  });
+  return false;
+});
+
 })(jQuery);

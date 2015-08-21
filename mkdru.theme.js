@@ -91,7 +91,7 @@ Drupal.theme.mkdruResult = function(hit, num, detailLink) {
     }
     html += '</span>';
   }
-  html += '<div class="export-to-ris"><a href="/service-proxy/?command=exportrecords&action=getfile&source=show&output=ris&windowid=&id=' + hit.recid + '">' + Drupal.t('Export to RIS') + '</div>';
+  html += '<div class="export-to-ris"><a href="/service-proxy/?command=exportrecords&action=getfile&source=show&output=ris&windowid=cookie-agreed&id=' + hit.recid + '">' + Drupal.t('Export to RIS') + '</div>';
   html += '</div>';
   html += '</div>';
   html += '</div>';

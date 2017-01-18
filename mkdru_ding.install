@@ -6,10 +6,10 @@
  */
 
 /**
-* Implements hook_install().
-*/
+ * Implements hook_install().
+ */
 function mkdru_ding_install() {
-  // Default settings
+  // Default settings.
   $settings['pz2_path'] = "/pazpar2/search.pz2";
   $settings['use_sessions'] = 1;
   $settings['sp']['user'] = "";
@@ -34,7 +34,7 @@ function mkdru_ding_install() {
   $settings['facets']['author']['orderWeight'] = 3;
   variable_set('mkdru_ding', $settings);
 
-  // Make sure mkdru has already loaded so we can be a submodule of it
+  // Make sure mkdru has already loaded so we can be a submodule of it.
   db_update('system')
     ->fields(array('weight' => 5))
     ->condition('name', 'mkdru_ding')
@@ -42,8 +42,8 @@ function mkdru_ding_install() {
 }
 
 /**
-* Implements hook_uninstall().
-*/
+ * Implements hook_uninstall().
+ */
 function mkdru_ding_uninstall() {
   variable_del('mkdru_ding');
 }

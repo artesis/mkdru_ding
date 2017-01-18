@@ -1,5 +1,7 @@
 // Wrapper for jQuery
 (function($) {
+  "use strict";
+
   var mkdru_ding = {};
 
   Drupal.theme.prototype.mkdruFacetContainer = function(facetsCfg) {
@@ -47,11 +49,11 @@
       'url' : href,
       'type' : 'get',
       'complete' : function(xhr) {
-        if (xhr.status == 200 && xhr.responseText.substr(0, 6) != '<html>') {
+        if (xhr.status === 200 && xhr.responseText.substr(0, 6) !== '<html>') {
           window.location.replace(href);
         }
         else {
-          alert(Drupal.t('The requested ris file is not available anymore. Please, refresh the page.'));
+          window.alert(Drupal.t('The requested ris file is not available anymore. Please, refresh the page.'));
         }
       }
     });

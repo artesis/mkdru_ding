@@ -1,3 +1,5 @@
+"use strict";
+
 Drupal.theme.mkdruShowFullDescr = function(id) {
   document.getElementById("short_" + id).style.display = 'none';
   document.getElementById("full_" + id).style.display = 'block';
@@ -11,37 +13,45 @@ Drupal.theme.mkdruTruncateDescr = function(desc, length) {
   return s.substr(0, s.lastIndexOf(' '));
 };
 Drupal.theme.mkdruSafeTrim = function(s) {
-  if (s.trim)
+  if (s.trim) {
     return s.trim();
-  if (s.replace)
+  }
+  if (s.replace) {
     return s.replace(/^\s+|\s+$/g, "");
+  }
   // argh
-  if (console && console.log)
+  if (console && console.log) {
     console.log("String object doesn't even have replace() ??");
+  }
   return s;
 };
 
-Drupal.theme.mkdruResult = function(hit, num, detailLink) {
+Drupal.theme.mkdruResult = function(hit) {
   var link = choose_url(hit);
   var basePath = Drupal.settings.basePath;
   var specific_author_field = "";
   var specific_subject_field = "";
   if (mkdru.settings) {
-    if (mkdru.settings.specific_author_field)
+    if (mkdru.settings.specific_author_field) {
       specific_author_field = mkdru.settings.specific_author_field + '=';
-    if (mkdru.settings.specific_subject_field)
+    }
+    if (mkdru.settings.specific_subject_field) {
       specific_subject_field = mkdru.settings.specific_subject_field + '=';
+    }
   }
 
-  if (!link)
+  if (!link) {
     link = choose_url(hit['location'][0]);
+  }
   var html = "";
   html += '<li class="search-result" id="rec_' + hit.recid + '" >' + '<h3 class="title">';
-  if (link)
+  if (link) {
     html += '<a href="' + link + '" target="_blank" >';
+  }
   html += hit["md-title"];
-  if (link)
+  if (link) {
     html += '</a>';
+  }
   if (hit['location'][0]['md-medium']) {
     html += " (" + hit['location'][0]['md-medium'] + ")";
   }
@@ -143,8 +153,9 @@ Drupal.theme.mkdruFacet = function(terms, facet, max, selections) {
     var id = term.name.split(/w+/).join("-").toLowerCase();
     html += '<div class="form-item form-type-checkbox">';
     html += '<input type="checkbox" id="' + id + '" onclick="window.location=\'' + term.toggleLink + '\'; return true;" class="form-checkbox"';
-    if (term.selected)
+    if (term.selected) {
       html += ' checked="checked"';
+    }
     html += '/><label class="option" for="' + id + '">' + term.name.replace('/', ' / ');
     html += '<span>&nbsp;(' + term.freq + ')</span></label></div>';
   }
@@ -154,21 +165,22 @@ Drupal.theme.mkdruFacet = function(terms, facet, max, selections) {
       if (selections[i]) {
         // since we have no target name (only id) go for the basename
         // FIXME get the proper target name
-        var name = facet == "source" ? selections[i].replace(/.*[\/\\]/, "").replace(/\?.*/, '') : selections[i];
+        var name = facet === "source" ? selections[i].replace(/.*[\/\\]/, "").replace(/\?.*/, '') : selections[i];
         html += '<div class="form-item form-type-checkbox">';
         html += '<input type="checkbox" checked="checked" id="' + name + '" ' + 'onclick="window.location=\'' + mkdru.removeLimit(facet, selections[i]) + '\';return true;" class="form-checkbox"/><label class="option" for="' + name + '">' + name.replace('/', ' / ') + '</a></label></div>';
       }
     }
   }
-  if (show)
+  if (show) {
     jQuery('#mkdru-container-' + facet).show();
+  }
   return html;
 };
 
 Drupal.theme.mkdruCounts = function(first, last, available, total) {
   var result = Drupal.theme.prototype.mkdruCounts(first, last, available, total);
   // Hide all counters except first when we have no results.
-  if (last == 0) {
+  if (last === 0) {
     jQuery('.mkdru-counts:not(:first)').hide();
   }
   // Show all counters.

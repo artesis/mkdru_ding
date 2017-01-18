@@ -1,7 +1,12 @@
 <?php
 
 /**
- * Implements hook_search_info()
+ * @file
+ * MKDRU Ding module.
+ */
+
+/**
+ * Implements hook_search_info().
  */
 function mkdru_ding_search_info() {
   return array(
@@ -12,28 +17,29 @@ function mkdru_ding_search_info() {
 }
 
 /**
- * Implements hook_search_page()
+ * Implements hook_search_page().
  */
 function mkdru_ding_search_page($results) {
-  $output['prefix']['#markup'] = theme('mkdru_results');
+  $build = array('#theme' => 'mkdru_results');
+  $output['prefix']['#markup'] = drupal_render($build);
   $output['suffix']['#markup'] = '';
   return $output;
 }
 
 /**
- * Implements hook_block_info()
+ * Implements hook_block_info().
  */
 function mkdru_ding_block_info() {
   $blocks['mkdru_ding_search_results'] = array(
     'info' => t('mkdru ding search results container.'),
-    'cache' => DRUPAL_NO_CACHE
+    'cache' => DRUPAL_NO_CACHE,
   );
 
   return $blocks;
 }
 
 /**
- * Implements hook_block_view()
+ * Implements hook_block_view().
  */
 function mkdru_ding_block_view($delta = '') {
   $block = array();
@@ -47,61 +53,73 @@ function mkdru_ding_block_view($delta = '') {
   }
   return $block;
 }
+
 /**
- * Search callback function that is invoked by search_view()
+ * Search callback function that is invoked by search_view().
  */
-function mkdru_ding_search_conditions_callback($keys) {}
+function mkdru_ding_search_conditions_callback($keys) {
+
+}
 
 /**
  * Implements hook_search_execute().
  */
-function mkdru_ding_search_execute($keys = NULL, $conditions = NULL) {
-  // Javascript from base mkdru.
-  $settings = variable_get('mkdru_ding', NULL);
+function mkdru_ding_search_execute($keys = '', $conditions = NULL) {
+  $state = array();
 
-  // Translate facet names.
-  if (!empty($settings['facets'])) {
-    foreach ($settings['facets'] as &$facet) {
-      $facet['displayName'] = t($facet['displayName']);
-    }
+  if ($keys) {
+    $state['query'] = $keys;
   }
 
-  theme(
-    'mkdru_js',
-    array(
-      'setting' => array(
-        'mkdru' => array(
-          'settings' => json_encode($settings),
-          'state' => array('query' => $keys),
-        ),
+  $mkdru_defaults = variable_get('mkdru_defaults', array());
+  $path = drupal_get_path('module', 'mkdru_ding');
+
+  $build = array(
+    '#theme' => 'mkdru_js',
+    '#setting' => array(
+      'mkdru' => array(
+        'settings' => json_encode($mkdru_defaults['settings']),
+        'state' => $state,
       ),
-    )
+    ),
   );
 
-  // Ding integration.
-  $path = drupal_get_path('module', 'mkdru_ding');
-  drupal_add_js($path . '/recipe.js', array(
-    'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
+  drupal_render($build);
+
+  drupal_add_js($path . '/recipe.js');
   drupal_add_js($path . '/mkdru.theme.js', array(
-    'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
+    'type' => 'file',
+    'scope' => 'footer',
+    'defer' => FALSE,
+    'preprocess' => TRUE,
+  ));
+
   drupal_add_js($path . '/mkdru_ding.js', array(
-    'type' => 'file', 'scope' => 'footer', 'defer' => TRUE, 'preprocess' => FALSE));
+    'type' => 'file',
+    'scope' => 'footer',
+    'defer' => FALSE,
+    'weight' => 100,
+    'preprocess' => TRUE,
+  ));
+
   return array();
 }
 
 /**
- * Implements hook_ding_facetbrowser()
+ * Implements hook_ding_facetbrowser().
  */
 function mkdru_ding_ding_facetbrowser() {
   $results             = new stdClass();
   $results->facets     = array();
-  $results->show_empty = TRUE; # Show an empty facetbrowser block, even if search didn't return any results
+  // Show an empty facetbrowser block, even if search didn't return any results.
+  $results->show_empty = TRUE;
+
   return $results;
 }
 
 /**
-* Implements hook_menu()
-*/
+ * Implements hook_menu().
+ */
 function mkdru_ding_menu() {
   $items['admin/config/search/mkdru_ding'] = array(
     'title' => 'Pazpar2 Metasearch Ding Integration',
@@ -115,57 +133,92 @@ function mkdru_ding_menu() {
 }
 
 /**
-* Implements hook_init()
-*/
+ * Implements hook_init().
+ */
 function mkdru_ding_init() {
   // Applies our module specific CSS to all pages. This works best because
   // all CSS is aggregated and cached so we reduce the number of HTTP
   // requests and the size is negligible.
-  drupal_add_css(drupal_get_path('module', 'mkdru_ding') .'/mkdru_ding.css');
+  drupal_add_css(drupal_get_path('module', 'mkdru_ding') . '/mkdru_ding.css');
 }
 
 
 /**
- * Settings form
+ * Settings form.
  */
 function mkdru_ding_settings($form, &$form_state) {
-  $form_state['build_info']['args']['settings'] = variable_get('mkdru_ding', NULL);
+  $form = array();
+
+  // Gets current values.
+  $mkdru = variable_get('mkdru_defaults', array());
+  if (isset($mkdru) && empty($form_state['build_info']['args'])) {
+    $form_state['build_info']['args'] = $mkdru;
+  }
   $form = drupal_retrieve_form('mkdru_settings_form', $form_state);
-  $form['settings']['#title'] = t('Search settings for DING integration');
-  $settings=$form_state['build_info']['args']['settings'];
+  $form['#title'] = t('Search settings for integration');
+
   $form['settings']['specific_author_field'] = array(
     '#type' => 'textfield',
     '#title' => t('Search-attribute for author-links'),
     '#description' => t('Use this specific attribute for author-links instead of any'),
     '#required' => FALSE,
-    '#default_value' => $settings['specific_author_field'],
+    '#default_value' => $mkdru['specific_author_field'],
   );
+
   $form['settings']['specific_subject_field'] = array(
     '#type' => 'textfield',
     '#title' => t('Search-attribute for subject-links'),
     '#description' => t('Use this specific attribute for subject-links instead of any'),
     '#required' => FALSE,
-    '#default_value' => $settings['specific_subject_field'],
+    '#default_value' => $mkdru['specific_subject_field'],
   );
 
   $form['submit'] = array(
     '#type' => 'submit',
     '#value' => 'Save configuration',
   );
+
   return $form;
 }
 
 /**
- * Settings form handler
+ * Settings form handler.
  */
 function mkdru_ding_settings_submit($form, &$form_state) {
-  variable_set('mkdru_ding', $form_state['values']['settings']);
+  $settings = array();
+  $values = $form_state['values'];
+  $settings['sp_server_auth'] = $values['settings']['is_service_proxy'] ? $values['sp_server_auth'] : 0;
+  if ($settings['sp_server_auth'] == 0) {
+    $settings['sp_user'] = $values['sp_user'];
+    $settings['sp_pass'] = $values['sp_pass'];
+  }
+  $settings['pz2_path'] = $values['pz2_path'];
+  $settings['is_service_proxy'] = $values['settings']['is_service_proxy'];
+
+  uasort($values['settings']['facets'], function ($a, $b) {
+    if ($a['orderWeight'] == $b['orderWeight']) {
+      return 0;
+    }
+    return $a['orderWeight'] < $b['orderWeight'] ? -1 : 1;
+  });
+
+  $settings['facets'] = $values['settings']['facets'];
+  $mkdru_defaults = array(
+    'settings' => $settings,
+    'pz2_path' => $values['pz2_path'],
+    'sp_user' => $values['sp_user'],
+    'sp_pass' => $values['sp_pass'],
+    'sp_server_auth' => $settings['sp_server_auth'],
+    'facets' => $values['settings']['facets'],
+  );
+
+  variable_set('mkdru_defaults', $mkdru_defaults);
   drupal_set_message(t('The configuration options have been saved.'));
 }
 
 /**
-* Implements hook_theme().
-*/
+ * Implements hook_theme().
+ */
 function mkdru_ding_theme() {
   return array(
     'mkdru_results' => array(

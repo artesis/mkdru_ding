@@ -233,3 +233,36 @@ function mkdru_ding_theme() {
     ),
   );
 }
+
+/**
+ * Implements hook_i18n_string_info().
+ */
+function mkdru_ding_i18n_string_info() {
+  $groups['mkdru_ding'] = array(
+    'title' => t('Universal Search Facets'),
+    'description' => t('Translatable link text.'),
+    'format' => FALSE,
+    'list' => TRUE,
+  );
+
+  return $groups;
+}
+
+/**
+ * Implements hook_i18n_string_list().
+ */
+function mkdru_ding_i18n_string_list($group) {
+  $strings = $texts = array();
+
+  if ($group == 'mkdru_ding') {
+    $mkdru_settings = variable_get('mkdru_defaults', array());
+
+    $facets = $mkdru_settings['facets'];
+
+    foreach ($facets as $key => $facet) {
+      $strings['mkdru_ding']['facets'][$key]['displayName'] = $facet['displayName'];
+    }
+
+    return $strings;
+  }
+}

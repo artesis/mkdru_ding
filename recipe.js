@@ -1,5 +1,26 @@
 "use strict";
 
+/**
+ * Compose additional parameter for title link.
+ *
+ * @param langcode
+ * @returns {string}
+ */
+function attachSfxLanguage(langcode) {
+  var langString;
+
+  var langVariants = {
+    'da': 'dan',
+    'en': 'eng'
+  };
+
+  if (langcode !== undefined) {
+    langString = '&req.language=' + langVariants[langcode];
+  }
+
+  return langString;
+}
+
 function choose_url (data, proxyPattern) {
     //first try to prepare local_url from recipe
     var local_url = data["md-url_recipe"] !== undefined ? prepare_url(data["md-url_recipe"][0], data) : null;
@@ -24,7 +45,8 @@ function choose_url (data, proxyPattern) {
     }
 
     //local failed, go for resource
-    return data["md-electronic-url"] !== undefined ? data["md-electronic-url"][0] : null;
+    var currentLang = Drupal.settings.mkdru.language;
+    return data["md-electronic-url"] !== undefined ? data["md-electronic-url"][0] + attachSfxLanguage(currentLang) : null;
 }
 
 var XRef = function (url, text) {
